@@ -43,3 +43,21 @@ nav {
   margin-left: 30px;
   margin-top: 5px;
 }
+
+.post-author-hash {
+  vertical-align: bottom;
+  display: inline-block;
+  max-width: 100px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.post-author-hash:hover {
+  display: block;
+  position: absolute;
+  max-width: none;
+  transform: translateY(-100%);
+  text-overflow: unset;
+  background-color: white;
+  z-index: 100;
+}

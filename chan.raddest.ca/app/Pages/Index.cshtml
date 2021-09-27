@@ -29,7 +29,13 @@
         foreach (var Post in Model.Posts)
         {
             <div class="post">
-                @Post.Created (@Post.Created.DayOfWeek) - <span class="post-id">No. @Post.Id</span>
+                <span class="post-author-name">@(Post.AuthorName ?? "Anonymous")</span>
+                #
+                <span class="post-author-hash">@Post.AuthorHash</span> 
+                -
+                <span class="post-created">@Post.Created (@Post.Created.DayOfWeek)</span>
+                -
+                <span class="post-id">No. @Post.Id</span>
                 <div class="post-content">
                     @Post.Content
                 </div>

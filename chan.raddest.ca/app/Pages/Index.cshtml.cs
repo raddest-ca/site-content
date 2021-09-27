@@ -45,12 +45,14 @@ namespace app.Pages
             Console.WriteLine($"Got post with content {Submission.Content}");
             if (!ModelState.IsValid) return Page();
 
-            var Post = new Post()
+            var post = new Post()
             {
+                AuthorName = Submission.Name,
+                AuthorHash = Post.ComputeHash(Submission.Hash),
                 Created = DateTime.Now,
                 Content = Submission.Content
             };
-            await _context.Posts.AddAsync(Post);
+            await _context.Posts.AddAsync(post);
             await _context.SaveChangesAsync();
             return RedirectToPage("./Index");
         }

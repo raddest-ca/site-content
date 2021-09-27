@@ -1,4 +1,6 @@
 using System;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace app.Models
 {
@@ -13,5 +15,15 @@ namespace app.Models
         public string Content { get; set; }
 
         public ulong? FileId { get; set; }
+
+        public static string ComputeHash(string input)
+        {
+            var rtn = new StringBuilder();
+            using var algo = SHA256.Create();
+            var bytes = algo.ComputeHash(Encoding.UTF8.GetBytes(input));
+            foreach (byte b in bytes)
+                rtn.Append(b.ToString("X2"));
+            return rtn.ToString();
+        }
     }
 }
