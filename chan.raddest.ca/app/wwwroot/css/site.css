@@ -61,3 +61,8 @@ nav {
   background-color: white;
   z-index: 100;
 }
+
+.post.subpost {
+  margin-left: 30px;
+  background-color: #c0982b;
+}

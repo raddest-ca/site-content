@@ -8,41 +8,33 @@ using app.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using System.Collections.Specialized;
-using System.Collections;
 
 namespace app.Pages
 {
-    public class IndexModel : PageModel
+    public class ThreadModel : PageModel
     {
-        private readonly ILogger<IndexModel> _logger;
+        private readonly ILogger<ThreadModel> _logger;
         private readonly AppDbContext _context;
 
-        public IndexModel(ILogger<IndexModel> logger, AppDbContext context)
+        public ThreadModel(ILogger<ThreadModel> logger, AppDbContext context)
         {
             _logger = logger;
             _context = context;
         }
 
-        public Dictionary<ulong, List<Post>> Threads { get; set; } = new();
+        [BindProperty(SupportsGet = true)]
+        public ulong ParentId {get; set;}
+
+        public IList<Post> Posts {get; set;}
 
         public void OnGet()
         {
-            var posts = _context.Posts.OrderBy(p => (int) p.Id).ToList();
-            foreach (var post in posts)
-            {
-                var threadId = post.ParentId ?? post.Id;
-                if (!Threads.ContainsKey(threadId))
-                {
-                    Threads[threadId] = new();
-                }
-                Threads[threadId].Add(post);
-            }
-
+            Posts = _context.Posts
+                .Where(post => post.ParentId == ParentId || post.Id == ParentId)
+                .ToList();
             var name = Request.Cookies["LastName"];
             var hash = Request.Cookies["LastHash"];
-            Submission = new()
-            {
+            Submission = new() {
                 Name = name,
                 Hash = hash
             };
@@ -52,8 +44,8 @@ namespace app.Pages
         {
             [Required]
             public string Content { get; set; }
-            public string Name { get; set; }
-            public string Hash { get; set; }
+            public string Name {get; set;}
+            public string Hash {get; set;}
         }
 
         [BindProperty]
@@ -62,13 +54,14 @@ namespace app.Pages
         public async Task<IActionResult> OnPost()
         {
             Console.WriteLine($"Got post with content {Submission.Content}");
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid) 
             {
                 OnGet();
                 return Page();
             }
             var post = new Post()
             {
+                ParentId = ParentId,
                 AuthorName = Submission.Name,
                 AuthorHash = Post.ComputeHash(Submission.Hash),
                 AuthorIp = Request.HttpContext.Connection.RemoteIpAddress.ToString(),
@@ -79,7 +72,7 @@ namespace app.Pages
             await _context.SaveChangesAsync();
             Response.Cookies.Append("LastName", Submission.Name);
             Response.Cookies.Append("LastHash", Submission.Hash);
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Thread", new { ParentId = ParentId });
         }
     }
 }

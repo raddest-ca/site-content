@@ -1,4 +1,6 @@
 ﻿@page
+@using Models
+@using System.Collections
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
@@ -27,22 +29,28 @@
 
 <div>
     @{
-        foreach (var Post in Model.Posts)
+        foreach (var Thread in Model.Threads.OrderBy(t => t.Key).ToList())
         {
-            <div class="post">
-                <span class="post-author-name">@(Post.AuthorName ?? "Anonymous")</span>
-                @{
-                    if (Post.AuthorHash is not null)
-                    {
-                        <span class="post-author-hash">#@Post.AuthorHash</span> 
+            foreach (var Post in Thread.Value)
+            {
+                <div class="post @(Post.ParentId is not null ? "subpost" : "")">
+                    <span class="post-author-name">@(Post.AuthorName ?? "Anonymous")</span>
+                    @{
+                        if (Post.AuthorHash is not null)
+                        {
+                            <span class="post-author-hash">#@Post.AuthorHash</span> 
+                        }
                     }
-                }
-                <span class="post-created">@Post.Created (@Post.Created.DayOfWeek)</span>
-                <span class="post-id">No. @Post.Id</span>
-                <div class="post-content">
-                    @Post.Content
+                    <span class="post-created">@Post.Created (@Post.Created.DayOfWeek)</span>
+                    <span class="post-id">No. @Post.Id</span>
+                    <span class="post-actions">[
+                        <a class="post-action-reply" asp-page="Thread" asp-route-ParentId="@(Post.ParentId ?? @Post.Id)">Reply</a>
+                    ]</span>
+                    <div class="post-content">
+                        @Post.Content
+                    </div>
                 </div>
-            </div>
+            }
         }
     }
 </div>
