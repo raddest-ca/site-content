@@ -27,6 +27,12 @@ namespace app.Pages
         public void OnGet()
         {
             Posts = _context.Posts.ToList();
+            var name = Request.Cookies["LastName"];
+            var hash = Request.Cookies["LastHash"];
+            Submission = new() {
+                Name = name,
+                Hash = hash
+            };
         }
 
         public class PostVM
@@ -58,6 +64,8 @@ namespace app.Pages
             };
             await _context.Posts.AddAsync(post);
             await _context.SaveChangesAsync();
+            Response.Cookies.Append("LastName", Submission.Name);
+            Response.Cookies.Append("LastHash", Submission.Hash);
             return RedirectToPage("./Index");
         }
     }
