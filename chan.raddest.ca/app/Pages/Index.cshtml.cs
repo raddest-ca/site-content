@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using System.Collections.Specialized;
 using System.Collections;
+using Microsoft.AspNetCore.Http;
 
 namespace app.Pages
 {
@@ -54,6 +55,8 @@ namespace app.Pages
             public string Content { get; set; }
             public string Name { get; set; }
             public string Hash { get; set; }
+
+            public IFormFile File {get; set;}
         }
 
         [BindProperty]

@@ -22,6 +22,10 @@
         <textarea asp-for="Submission.Content"></textarea>
     </div>
     <div>
+        <label asp-for="Submission.File"></label>
+        <input asp-for="Submission.File"/>
+    </div>
+    <div>
         <button type="submit">Submit</button>
     </div>
     @Html.ValidationSummary()
