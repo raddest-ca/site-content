@@ -1,0 +1,39 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<h1>Welcome to Raddest!</h1>
+
+<form class="submission-form" method="POST">
+    <div>
+        <label asp-for="Submission.Name"></label>
+        <input asp-for="Submission.Name"/>
+    </div>
+    <div>
+        <label asp-for="Submission.Hash"></label>
+        <input asp-for="Submission.Hash"/>
+    </div>
+    <div>
+        <label asp-for="Submission.Content"></label>
+        <textarea asp-for="Submission.Content"></textarea>
+    </div>
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+</form>
+
+<div>
+    @{
+        foreach (var Post in Model.Posts)
+        {
+            <div class="post">
+                @Post.Created (@Post.Created.DayOfWeek) - <span class="post-id">No. @Post.Id</span>
+                <div class="post-content">
+                    @Post.Content
+                </div>
+            </div>
+        }
+    }
+</div>

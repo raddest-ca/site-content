@@ -1,0 +1,45 @@
+﻿/* Body */
+body {
+  background-color: #10315a;
+}
+
+h1 {
+  color: #DDD;
+}
+
+nav {
+  background-color: #DDD;
+  padding: 5px;
+}
+
+/* Submission form */
+.submission-form {
+  background-color: #981837;
+  padding: 10px;
+}
+
+.submission-form > div {
+  margin-top: 5px;
+}
+
+.submission-form > div > label {
+  min-width: 70px;
+  display:inline-block;
+}
+
+
+/* Posts */
+.post {
+  padding: 3px;
+  margin: 3px;
+  background-color: #e7b72f;
+}
+
+.post-id {
+  color: rgb(54, 54, 54);
+}
+
+.post-content {
+  margin-left: 30px;
+  margin-top: 5px;
+}
