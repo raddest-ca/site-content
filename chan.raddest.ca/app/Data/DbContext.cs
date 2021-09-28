@@ -14,8 +14,8 @@ namespace app.Data
         {
         }
 
-        public DbSet<Post> Posts {get; set;}
-        public DbSet<File> Files {get; set;}
+        public DbSet<Post> Posts { get; set; }
+        public DbSet<File> Files { get; set; }
 
         public async Task<IList<Post>> GetThread(ulong ParentPostId)
         {
@@ -25,31 +25,53 @@ namespace app.Data
                 .ToListAsync();
         }
 
-        public async Task<Dictionary<ulong, List<Post>>> GetThreads()
+        public static readonly uint ThreadsPerPage = 10;
+        public static readonly uint PreviewPerThread = 10;
+
+        public async Task<uint> GetPageCount()
+        {
+            var count = await Posts
+                .Where(p => p.ParentId == null)
+                .CountAsync();
+            return (uint)Math.Ceiling(count / (double)ThreadsPerPage);
+        }
+        
+        public async Task<Dictionary<ulong, List<Post>>> GetThreads(uint PaginationIndex)
         {
             // Create rtn dict
             Dictionary<ulong, List<Post>> rtn = new();
 
-            // Get posts ordered by Id
-            var posts = await Posts
-                .Include(p => p.File)
+            // Query posts ordered by Id
+            var threadParents = await Posts
+                .Where(p => p.ParentId == null)
                 .OrderBy(p => (int)p.Id)
+                .Include(p => p.File)
+                // .TakeLast((int)ThreadsPerPage)
+                .ToListAsync();
+
+            // Create threads in rtn dict
+            foreach (var post in threadParents)
+            {
+                rtn[post.Id] = new();
+                rtn[post.Id].Add(post);
+            }
+
+            // Create list of parent ids
+            var parentIds = threadParents.Select(p => p.Id).ToList();
+
+            // Query posts for each thread
+            var threadChildren = await Posts
+                .Where(p => p.ParentId != null)
+                .Where(p => parentIds.Contains((ulong)p.ParentId))
+                .OrderBy(p => (int)p.Id)
+                .Include(p => p.File)
+                // .TakeLast((int)PreviewPerThread)
                 .ToListAsync();
 
             // Add posts to threads
-            foreach (var post in posts)
+            foreach (var post in threadChildren)
             {
-                // Get thread id
-                var threadId = post.ParentId ?? post.Id;
-
-                // If thread doesn't exist, create
-                if (!rtn.ContainsKey(threadId))
-                {
-                    rtn[threadId] = new();
-                }
-
-                // Add post to thread
-                rtn[threadId].Add(post);
+                rtn[(ulong)post.ParentId].Append(post);
             }
 
             // Return thread dict

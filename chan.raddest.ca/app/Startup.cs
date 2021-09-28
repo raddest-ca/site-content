@@ -7,6 +7,7 @@ using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,8 +29,10 @@ namespace app
         {
             services.AddRazorPages().AddRazorRuntimeCompilation();
 
+            var builder = new SqlConnectionStringBuilder(Configuration.GetConnectionString("Azure:DbConnectionString"));
+            builder.Password = Configuration["Azure:DbPassword"];
             services.AddDbContext<AppDbContext>(
-                options => options.UseSqlite(Configuration.GetConnectionString("DbContext"))
+                options => options.UseSqlServer(builder.ConnectionString)
             );
 
             BlobServiceClient blobService = new BlobServiceClient(Configuration["Azure:StorageAccountConnectionString"]);

@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "{PaginationIndex:int?}"
 @using Models
 @using System.Collections
 @model IndexModel
@@ -9,6 +9,15 @@
 <h1>Welcome to Raddest!</h1>
 
 <partial name="_SubmissionForm" model="Model.Submission"/>
+
+<div class="page-picker">
+@{
+    for (var i=0; i<Model.PageCount; i++)
+    {
+        <p>@i</p>
+    }
+}
+</div>
 
 <div>
     @{

@@ -33,12 +33,18 @@ namespace app.Pages
 
         public async Task OnGetAsync()
         {
-            Threads = await _context.GetThreads();
+            Threads = await _context.GetThreads(PaginationIndex);
             Submission = Submission.FromRequest(Request);
+            PageCount = await _context.GetPageCount();
         }
 
         [BindProperty]
         public Submission Submission { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public uint PaginationIndex { get; set; }
+
+        public uint? PageCount {get; set;}
 
         public async Task<IActionResult> OnPost()
         {

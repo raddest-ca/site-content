@@ -27,6 +27,14 @@ nav {
   display:inline-block;
 }
 
+/* Controls */
+.page-picker {
+  margin: 7px 0;
+  background-color: #981837;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 /* Posts */
 .post {
