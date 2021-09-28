@@ -31,82 +31,30 @@ namespace app.Pages
 
         public Dictionary<ulong, List<Post>> Threads { get; set; } = new();
 
-        public void OnGet()
+        public async Task OnGetAsync()
         {
-            var posts = _context.Posts
-                .Include(p => p.File)
-                .OrderBy(p => (int)p.Id)
-                .ToList();
-            foreach (var post in posts)
-            {
-                var threadId = post.ParentId ?? post.Id;
-                if (!Threads.ContainsKey(threadId))
-                {
-                    Threads[threadId] = new();
-                }
-                Threads[threadId].Add(post);
-            }
-
-            var name = Request.Cookies["LastName"];
-            var hash = Request.Cookies["LastHash"];
-            Submission = new()
-            {
-                Name = name,
-                Hash = hash
-            };
-        }
-
-        public class PostVM
-        {
-            [Required]
-            public string Content { get; set; }
-            public string Name { get; set; }
-            public string Hash { get; set; }
-
-            public IFormFile File { get; set; }
+            Threads = await _context.GetThreads();
+            Submission = Submission.FromRequest(Request);
         }
 
         [BindProperty]
-        public PostVM Submission { get; set; }
+        public Submission Submission { get; set; }
 
         public async Task<IActionResult> OnPost()
         {
             Console.WriteLine($"Got post with content {Submission.Content}");
             if (!ModelState.IsValid)
             {
-                OnGet();
+                await OnGetAsync();
                 return Page();
             }
-            var post = new Post()
-            {
-                AuthorName = Submission.Name,
-                AuthorHash = Post.ComputeHash(Submission.Hash),
-                AuthorIp = Request.HttpContext.Connection.RemoteIpAddress.ToString(),
-                Created = DateTime.Now,
-                Content = Submission.Content,
-            };
-            if (Submission.File is not null)
-            {
-                var file = new File()
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Created = DateTime.Now,
-                    FileName = Submission.File.FileName,
-                };
-                // add file id to post
-                post.FileId = file.Id;
-                // add file to db
-                await _context.Files.AddAsync(file);
 
-                // upload to azure
-                using var stream = Submission.File.OpenReadStream();
-                await _blob.UploadBlobAsync(file.Id, stream);
-                
-                // update file URI
-                file.Uri = _blob.GetBlobClient(file.Id).Uri.ToString();
-            }
-            await _context.Posts.AddAsync(post);
-            await _context.SaveChangesAsync();
+            await Submission.Commit(
+                _context,
+                _blob,
+                Request.HttpContext.Connection.RemoteIpAddress.ToString(),
+                null
+            );
 
             Response.Cookies.Append("LastName", Submission.Name);
             Response.Cookies.Append("LastHash", Submission.Hash);

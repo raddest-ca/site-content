@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using app.Data;
 using app.Models;
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
@@ -15,61 +15,45 @@ namespace app.Pages
     {
         private readonly ILogger<ThreadModel> _logger;
         private readonly AppDbContext _context;
+        private readonly BlobContainerClient _blob;
 
-        public ThreadModel(ILogger<ThreadModel> logger, AppDbContext context)
+        public ThreadModel(ILogger<ThreadModel> logger, AppDbContext context, BlobContainerClient blobClient)
         {
             _logger = logger;
             _context = context;
+            _blob = blobClient;
         }
 
         [BindProperty(SupportsGet = true)]
         public ulong ParentId {get; set;}
 
+        [BindProperty]
+        public Submission Submission { get; set; }
+
         public IList<Post> Posts {get; set;}
 
-        public void OnGet()
+        public async Task OnGetAsync()
         {
-            Posts = _context.Posts
-                .Where(post => post.ParentId == ParentId || post.Id == ParentId)
-                .ToList();
-            var name = Request.Cookies["LastName"];
-            var hash = Request.Cookies["LastHash"];
-            Submission = new() {
-                Name = name,
-                Hash = hash
-            };
+            Posts = await _context.GetThread(ParentId);
+            Submission = Submission.FromRequest(Request);
         }
-
-        public class PostVM
-        {
-            [Required]
-            public string Content { get; set; }
-            public string Name {get; set;}
-            public string Hash {get; set;}
-        }
-
-        [BindProperty]
-        public PostVM Submission { get; set; }
 
         public async Task<IActionResult> OnPost()
         {
             Console.WriteLine($"Got post with content {Submission.Content}");
             if (!ModelState.IsValid) 
             {
-                OnGet();
+                await OnGetAsync();
                 return Page();
             }
-            var post = new Post()
-            {
-                ParentId = ParentId,
-                AuthorName = Submission.Name,
-                AuthorHash = Post.ComputeHash(Submission.Hash),
-                AuthorIp = Request.HttpContext.Connection.RemoteIpAddress.ToString(),
-                Created = DateTime.Now,
-                Content = Submission.Content
-            };
-            await _context.Posts.AddAsync(post);
-            await _context.SaveChangesAsync();
+            
+            await Submission.Commit(
+                _context,
+                _blob,
+                Request.HttpContext.Connection.RemoteIpAddress.ToString(),
+                ParentId
+            );
+
             Response.Cookies.Append("LastName", Submission.Name);
             Response.Cookies.Append("LastHash", Submission.Hash);
             return RedirectToPage("./Thread", new { ParentId = ParentId });

@@ -1,0 +1,11 @@
+<script>
+    document.querySelectorAll(".post-file > img").forEach(i => {
+        i.addEventListener("click", e => {
+            if (i.classList.contains("expand")) {
+                i.classList.remove("expand");
+            } else {
+                i.classList.add("expand");
+            }
+        });
+    });
+</script>

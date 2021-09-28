@@ -42,6 +42,7 @@ nav {
 .post-content {
   margin-left: 30px;
   margin-top: 5px;
+  display:inline-block;
 }
 
 .post-author-hash {
@@ -67,10 +68,19 @@ nav {
   background-color: #c0982b;
 }
 
+.post-file {
+  display: inline-block;
+}
+
 .post-file > .post-media {
   width: 300px;
 }
 
 .post-file > .post-media.expand {
   width: unset;
+}
+
+/* Util */
+.hidden {
+  display: none;
 }

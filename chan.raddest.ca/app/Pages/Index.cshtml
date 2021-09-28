@@ -8,28 +8,7 @@
 
 <h1>Welcome to Raddest!</h1>
 
-<form class="submission-form" method="POST" enctype="multipart/form-data">
-    <div>
-        <label asp-for="Submission.Name"></label>
-        <input asp-for="Submission.Name" />
-    </div>
-    <div>
-        <label asp-for="Submission.Hash"></label>
-        <input asp-for="Submission.Hash" />
-    </div>
-    <div>
-        <label asp-for="Submission.Content"></label>
-        <textarea asp-for="Submission.Content"></textarea>
-    </div>
-    <div>
-        <label asp-for="Submission.File"></label>
-        <input asp-for="Submission.File" />
-    </div>
-    <div>
-        <button type="submit">Submit</button>
-    </div>
-    @Html.ValidationSummary()
-</form>
+<partial name="_SubmissionForm" model="Model.Submission"/>
 
 <div>
     @{
@@ -37,43 +16,7 @@
         {
             foreach (var Post in Thread.Value)
             {
-                <div class="post @(Post.ParentId is not null ? "subpost" : "")">
-                    <div class="post-author">
-                        <span class="post-author-name">@(Post.AuthorName ?? "Anonymous")</span>
-                        @{
-                            if (Post.AuthorHash is not null)
-                            {
-                                <span class="post-author-hash">#@Post.AuthorHash</span>
-                            }
-                        }
-                        <span class="post-created">@Post.Created (@Post.Created.DayOfWeek)</span>
-                        <span class="post-id">No. @Post.Id</span>
-                        <span class="post-actions">[
-                            <a class="post-action-reply" asp-page="Thread"
-                    asp-route-ParentId="@(Post.ParentId ?? @Post.Id)">Reply</a>
-                            ]</span>
-                    </div>
-                    @{
-                        if (Post.File is not null)
-                        {
-                            <div class="post-file">
-                                @{
-                                    if (Post.File.IsImage)
-                                    {
-                                        <img class="post-media" src="@Post.File.Uri"></img>
-                                    }
-                                    else if (Post.File.IsVideo)
-                                    {
-                                        <video class="post-media"  src="@Post.File.Uri" controls></video>
-                                    }
-                                }
-                            </div>
-                        }
-                    }
-                    <div class="post-content">
-                        @Post.Content
-                    </div>
-                </div>
+                <partial name="_Post" model="Post"></partial>
             }
         }
     }
@@ -81,15 +24,5 @@
 
 @section Scripts
 {
-    <script>
-        document.querySelectorAll(".post-file > img").forEach(i => {
-            i.addEventListener("click", e => {
-                if (i.classList.contains("expand")) {
-                    i.classList.remove("expand");
-                } else {
-                    i.classList.add("expand");
-                }
-            });
-        });
-    </script>
+    <partial name="_PostScripts"></partial>
 }

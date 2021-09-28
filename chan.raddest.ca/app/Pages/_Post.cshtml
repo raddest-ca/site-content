@@ -1,0 +1,38 @@
+@model Models.Post
+
+<div class="post @(Model.ParentId is not null ? "subpost" : "")">
+    <div class="post-author">
+        <span class="post-author-name">@(Model.AuthorName ?? "Anonymous")</span>
+        @{
+            if (Model.AuthorHash is not null)
+            {
+                <span class="post-author-hash">#@Model.AuthorHash</span>
+            }
+        }
+        <span class="post-created">@Model.Created (@Model.Created.DayOfWeek)</span>
+        <span class="post-id">No. @Model.Id</span>
+        <span class="post-actions">[
+            <a class="post-action-reply" asp-page="Thread" asp-route-ParentId="@(Model.ParentId ?? @Model.Id)">Reply</a>
+            ]</span>
+    </div>
+    @{
+        if (Model.File is not null)
+        {
+            <div class="post-file">
+                @{
+                    if (Model.File.IsImage)
+                    {
+                        <img class="post-media" src="@Model.File.Uri"></img>
+                    }
+                    else if (Model.File.IsVideo)
+                    {
+                        <video class="post-media" src="@Model.File.Uri" controls></video>
+                    }
+                }
+            </div>
+        }
+    }
+    <div class="post-content">
+        @Model.Content
+    </div>
+</div>
