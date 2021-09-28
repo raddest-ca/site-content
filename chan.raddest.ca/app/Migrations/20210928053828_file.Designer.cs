@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using app.Data;
 
 namespace app.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210928053828_file")]
+    partial class file
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -18,16 +20,17 @@ namespace app.Migrations
 
             modelBuilder.Entity("app.Models.File", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("BlobId")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FileName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Uri")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -56,26 +59,15 @@ namespace app.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("FileId")
-                        .HasColumnType("TEXT");
+                    b.Property<ulong?>("FileId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<ulong?>("ParentId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FileId");
-
                     b.ToTable("Posts");
-                });
-
-            modelBuilder.Entity("app.Models.Post", b =>
-                {
-                    b.HasOne("app.Models.File", "File")
-                        .WithMany()
-                        .HasForeignKey("FileId");
-
-                    b.Navigation("File");
                 });
 #pragma warning restore 612, 618
         }

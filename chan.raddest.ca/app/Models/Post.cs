@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -17,7 +18,10 @@ namespace app.Models
 
         public string Content { get; set; }
 
-        public ulong? FileId { get; set; }
+        [ForeignKey(nameof(Models.File.Id))]
+        public string? FileId { get; set; }
+
+        public virtual File File {get; set;}
 
         public static string ComputeHash(string input)
         {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using app.Data;
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -30,6 +31,11 @@ namespace app
             services.AddDbContext<AppDbContext>(
                 options => options.UseSqlite(Configuration.GetConnectionString("DbContext"))
             );
+
+            BlobServiceClient blobService = new BlobServiceClient(Configuration["Azure:StorageAccountConnectionString"]);
+            BlobContainerClient blobContainer = blobService.GetBlobContainerClient(Configuration["Azure:ContainerName"]);
+            services.AddSingleton(blobService);
+            services.AddSingleton(blobContainer);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

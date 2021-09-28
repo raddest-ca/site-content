@@ -66,3 +66,11 @@ nav {
   margin-left: 30px;
   background-color: #c0982b;
 }
+
+.post-file > .post-media {
+  width: 300px;
+}
+
+.post-file > .post-media.expand {
+  width: unset;
+}
