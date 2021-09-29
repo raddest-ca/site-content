@@ -62,7 +62,11 @@ namespace app.Data
                 .Take(ThreadsPerPage)
                 .ToList()
                 .AsEnumerable()
-                .Select(thread => { thread.Latest.Reverse(); return thread;})
+                .Select(thread => {
+                    thread.Latest.Reverse();
+                    thread.Latest.RemoveAll(thread.Earliest.Contains);
+                    return thread;
+                })
                 .ToList();
         }
     }
