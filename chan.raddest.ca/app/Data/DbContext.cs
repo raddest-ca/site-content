@@ -40,15 +40,18 @@ namespace app.Data
         public async Task<List<Thread>> GetThreads(int PaginationIndex)
         {
             return Posts
+                .Include(post => post.File)
                 .Where(Post.IsThread)
                 .Select(parent => new Thread{
                     Parent = parent,
                     Earliest = Posts
+                        .Include(post => post.File)
                         .Where(post => post.ParentId == parent.Id)
                         .OrderBy(post => post.Created)
                         .Take(PreviewPerThread)
                         .ToList(),
                     Latest = Posts
+                        .Include(post => post.File)
                         .Where(post => post.ParentId == parent.Id)
                         .OrderByDescending(post => post.Created)
                         .Take(PreviewPerThread)
