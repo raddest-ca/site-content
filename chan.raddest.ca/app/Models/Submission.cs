@@ -16,7 +16,7 @@ namespace app.Models
 
         public IFormFile File { get; set; }
 
-        public ulong? ParentId { get; set; }
+        public int? ParentId { get; set; }
 
         public static Submission FromRequest(HttpRequest request) {
             var name = request.Cookies["LastName"];
@@ -31,7 +31,7 @@ namespace app.Models
             AppDbContext context,
             BlobContainerClient blobClient,
             string author,
-            ulong? parentId
+            int? parentId
         )
         {
             var post = new Post()
@@ -47,7 +47,7 @@ namespace app.Models
             {
                 var file = new File()
                 {
-                    Id = Guid.NewGuid().ToString(),
+                    Id = Guid.NewGuid(),
                     Created = DateTime.Now,
                     FileName = this.File.FileName,
                 };
@@ -58,9 +58,9 @@ namespace app.Models
 
                 // upload to azure
                 using var stream = this.File.OpenReadStream();
-                await blobClient.UploadBlobAsync(file.Id, stream);
+                await blobClient.UploadBlobAsync(file.BlobName, stream);
                 // update file URI
-                file.Uri = blobClient.GetBlobClient(file.Id).Uri.ToString();
+                file.Uri = blobClient.GetBlobClient(file.BlobName).Uri.ToString();
             }
             await context.Posts.AddAsync(post);
             await context.SaveChangesAsync();

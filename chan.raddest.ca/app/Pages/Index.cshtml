@@ -14,18 +14,32 @@
 @{
     for (var i=0; i<Model.PageCount; i++)
     {
-        <p>@i</p>
+        if (i == Model.PaginationIndex)
+        {
+            <p>[@i]</p>
+        } else {
+            <p>[<a asp-page="Index" asp-route-PaginationIndex="@i">@i</a>]</p>
+        }
     }
 }
 </div>
 
 <div>
     @{
-        foreach (var Thread in Model.Threads.OrderBy(t => t.Key).ToList())
+        foreach (var thread in Model.Threads)
         {
-            foreach (var Post in Thread.Value)
+            <partial name="_Post" model="thread.Parent"></partial>
+            foreach (var post in thread.Earliest)
             {
-                <partial name="_Post" model="Post"></partial>
+                <partial name="_Post" model="post"></partial>
+            }
+            if (thread.ShowElipses)
+            {
+                <div class="post subpost">...</div>
+            }
+            foreach (var post in thread.Latest)
+            {
+                <partial name="_Post" model="post"></partial>
             }
         }
     }

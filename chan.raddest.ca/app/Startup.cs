@@ -29,7 +29,7 @@ namespace app
         {
             services.AddRazorPages().AddRazorRuntimeCompilation();
 
-            var builder = new SqlConnectionStringBuilder(Configuration.GetConnectionString("Azure:DbConnectionString"));
+            var builder = new SqlConnectionStringBuilder(Configuration["Azure:DbConnectionString"]);
             builder.Password = Configuration["Azure:DbPassword"];
             services.AddDbContext<AppDbContext>(
                 options => options.UseSqlServer(builder.ConnectionString)

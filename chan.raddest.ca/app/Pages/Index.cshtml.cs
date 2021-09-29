@@ -29,7 +29,7 @@ namespace app.Pages
             _blob = blobClient;
         }
 
-        public Dictionary<ulong, List<Post>> Threads { get; set; } = new();
+        public List<Thread> Threads { get; set; } = new();
 
         public async Task OnGetAsync()
         {
@@ -42,13 +42,11 @@ namespace app.Pages
         public Submission Submission { get; set; }
 
         [BindProperty(SupportsGet = true)]
-        public uint PaginationIndex { get; set; }
-
-        public uint? PageCount {get; set;}
+        public int PaginationIndex { get; set; }
+        public int? PageCount {get; set;}
 
         public async Task<IActionResult> OnPost()
         {
-            Console.WriteLine($"Got post with content {Submission.Content}");
             if (!ModelState.IsValid)
             {
                 await OnGetAsync();

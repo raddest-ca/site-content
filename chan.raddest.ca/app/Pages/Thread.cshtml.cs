@@ -25,7 +25,7 @@ namespace app.Pages
         }
 
         [BindProperty(SupportsGet = true)]
-        public ulong ParentId {get; set;}
+        public int ParentId {get; set;}
 
         [BindProperty]
         public Submission Submission { get; set; }
@@ -40,7 +40,6 @@ namespace app.Pages
 
         public async Task<IActionResult> OnPost()
         {
-            Console.WriteLine($"Got post with content {Submission.Content}");
             if (!ModelState.IsValid) 
             {
                 await OnGetAsync();

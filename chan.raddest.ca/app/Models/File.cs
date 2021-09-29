@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using Azure.Storage.Blobs;
 
@@ -7,11 +8,19 @@ namespace app.Models
 {
     public class File
     {
-        public string Id { get; set; }
+        [Key]
+        public Guid Id { get; set; }
         public DateTime Created { get; set; }
         public string Uri { get; set; }
 
         public string FileName { get; set; }
+
+        public string BlobName 
+        {
+            get{
+                return Id.ToString();
+            }
+        }
 
         public string FileType
         {
