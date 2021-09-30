@@ -45,6 +45,20 @@
     }
 </div>
 
+<div class="page-picker">
+@{
+    for (var i=0; i<Model.PageCount; i++)
+    {
+        if (i == Model.PaginationIndex)
+        {
+            <p>[@i]</p>
+        } else {
+            <p>[<a asp-page="Index" asp-route-PaginationIndex="@i">@i</a>]</p>
+        }
+    }
+}
+</div>
+
 @section Scripts
 {
     <partial name="_PostScripts"></partial>
