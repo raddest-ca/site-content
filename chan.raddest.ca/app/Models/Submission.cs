@@ -27,6 +27,19 @@ namespace app.Models
             };
         }
 
+        public void SaveInfoToCookies(HttpResponse Response)
+        {
+            if (Name != null)
+            {
+                Response.Cookies.Append("LastName", Name);
+            }
+            
+            if (Hash != null)
+            {
+                Response.Cookies.Append("LastHash", Hash);
+            }
+        }
+
         public async Task Commit(
             AppDbContext context,
             BlobContainerClient blobClient,

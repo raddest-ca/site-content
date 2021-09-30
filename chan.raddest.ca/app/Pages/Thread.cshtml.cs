@@ -53,8 +53,7 @@ namespace app.Pages
                 ParentId
             );
 
-            Response.Cookies.Append("LastName", Submission.Name);
-            Response.Cookies.Append("LastHash", Submission.Hash);
+            Submission.SaveInfoToCookies(Response);
             return RedirectToPage("./Thread", new { ParentId = ParentId });
         }
     }
