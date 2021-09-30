@@ -30,7 +30,7 @@ namespace app.Models
 
         public bool Validate(ModelStateDictionary ModelState)
         {
-            if (File.Length > 104857600)
+            if (File != null && File.Length > 104857600)
             {
                 ModelState.AddModelError(nameof(Submission.File), "File too large, 100mb max");
                 return false;
