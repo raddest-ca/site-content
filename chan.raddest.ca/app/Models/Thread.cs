@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using app.Data;
 
 namespace app.Models
 {
@@ -11,10 +12,12 @@ namespace app.Models
 
         public DateTime LastUpdated {get; set;}
 
+        public int PostCount {get; set;}
+
         public bool ShowElipses {
             get
             {
-                return Latest.Count > 0;
+                return PostCount > AppDbContext.PreviewPerThread * 2;
             }
         }
 

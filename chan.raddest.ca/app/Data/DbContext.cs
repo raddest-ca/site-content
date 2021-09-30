@@ -25,8 +25,8 @@ namespace app.Data
                 .ToListAsync();
         }
 
-        public static readonly int ThreadsPerPage = 3;
-        public static readonly int PreviewPerThread = 3;
+        public static readonly int ThreadsPerPage = 15;
+        public static readonly int PreviewPerThread = 7;
 
         public async Task<int> GetPageCount()
         {
@@ -58,7 +58,10 @@ namespace app.Data
                         .ToList(),
                     LastUpdated = Posts
                         .Where(post => post.ParentId == parent.Id || post.Id == parent.Id)
-                        .Max(post => post.Created)
+                        .Max(post => post.Created),
+                    PostCount = Posts
+                        .Where(post => post.ParentId == parent.Id || post.Id == parent.Id)
+                        .Count()
                 })
                 .OrderByDescending(thread => thread.LastUpdated)
                 .Skip(ThreadsPerPage * PaginationIndex)
