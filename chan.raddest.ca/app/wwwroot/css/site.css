@@ -53,6 +53,10 @@ nav {
   display:inline-block;
 }
 
+.post-content > pre {
+  white-space: pre-wrap;
+}
+
 .post-author-hash {
   vertical-align: bottom;
   display: inline-block;
