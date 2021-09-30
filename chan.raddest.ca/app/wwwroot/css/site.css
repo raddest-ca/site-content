@@ -92,3 +92,7 @@ nav {
 .hidden {
   display: none;
 }
+
+.light {
+  background-color: #DDD;
+}

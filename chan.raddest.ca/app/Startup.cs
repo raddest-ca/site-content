@@ -57,6 +57,8 @@ namespace app
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseStatusCodePages();
+            app.UseStatusCodePagesWithReExecute("/Status{0}");
 
             app.UseRouting();
 
