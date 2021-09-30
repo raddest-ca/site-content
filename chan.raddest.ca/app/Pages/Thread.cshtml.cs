@@ -25,12 +25,12 @@ namespace app.Pages
         }
 
         [BindProperty(SupportsGet = true)]
-        public int ParentId {get; set;}
+        public int ParentId { get; set; }
 
         [BindProperty]
         public Submission Submission { get; set; }
 
-        public IList<Post> Posts {get; set;}
+        public IList<Post> Posts { get; set; }
 
         public async Task OnGetAsync()
         {
@@ -40,12 +40,12 @@ namespace app.Pages
 
         public async Task<IActionResult> OnPost()
         {
-            if (!ModelState.IsValid) 
+            if (!ModelState.IsValid || !Submission.Validate(ModelState))
             {
                 await OnGetAsync();
                 return Page();
             }
-            
+
             await Submission.Commit(
                 _context,
                 _blob,

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using app.Data;
 using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace app.Models
 {
@@ -25,6 +26,16 @@ namespace app.Models
                 Name = name,
                 Hash = hash
             };
+        }
+
+        public bool Validate(ModelStateDictionary ModelState)
+        {
+            if (File.Length > 104857600)
+            {
+                ModelState.AddModelError(nameof(Submission.File), "File too large, 100mb max");
+                return false;
+            }
+            return true;
         }
 
         public void SaveInfoToCookies(HttpResponse Response)

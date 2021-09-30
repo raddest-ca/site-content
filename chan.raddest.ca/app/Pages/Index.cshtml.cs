@@ -47,7 +47,7 @@ namespace app.Pages
 
         public async Task<IActionResult> OnPost()
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || !Submission.Validate(ModelState))
             {
                 await OnGetAsync();
                 return Page();
