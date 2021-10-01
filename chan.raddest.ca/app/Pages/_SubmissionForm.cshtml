@@ -7,7 +7,8 @@
     </div>
     <div>
         <label asp-for="Hash"></label>
-        <input asp-for="Hash" />
+        @* Asp doesn't like DataType.Password value binding, so we do it ourselves. *@
+        <input asp-for="Hash" value="@Model.Hash" />
     </div>
     <div>
         <label asp-for="Content"></label>

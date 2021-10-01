@@ -13,16 +13,20 @@ namespace app.Models
         [Required]
         public string Content { get; set; }
         public string Name { get; set; }
+
+        [DataType(DataType.Password)]
         public string Hash { get; set; }
 
         public IFormFile File { get; set; }
 
         public int? ParentId { get; set; }
 
-        public static Submission FromRequest(HttpRequest request) {
+        public static Submission FromRequest(HttpRequest request)
+        {
             var name = request.Cookies["LastName"];
             var hash = request.Cookies["LastHash"];
-            return new() {
+            return new()
+            {
                 Name = name,
                 Hash = hash
             };
@@ -44,7 +48,7 @@ namespace app.Models
             {
                 Response.Cookies.Append("LastName", Name);
             }
-            
+
             if (Hash != null)
             {
                 Response.Cookies.Append("LastHash", Hash);
