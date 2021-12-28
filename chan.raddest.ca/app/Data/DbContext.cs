@@ -22,6 +22,7 @@ namespace app.Data
             return await Posts
                 .Include(post => post.File)
                 .Where(post => post.ParentId == ParentPostId || post.Id == ParentPostId)
+                .OrderBy(post => post.Created)
                 .ToListAsync();
         }
 
