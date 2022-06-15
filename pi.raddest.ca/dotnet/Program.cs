@@ -7,7 +7,7 @@ using BufferedStream bs = new BufferedStream(fs);
 using StreamReader sr = new StreamReader(bs);
 
 
-Dictionary<string, int> count = new();
+Dictionary<string, List<int>> count = new();
 
 var executing = true;
 var cancelled = false; // only trap ctrl+c once
@@ -30,38 +30,38 @@ Console.TreatControlCAsInput = false;
 Console.CancelKeyPress += onCancel;
 
 
-string current = "";
+string current = "........";
 
 int read;
 char[] buffer = new char[10 * 1024 * 1024];
 long numChunks = fs.Length / buffer.Length;
 Console.WriteLine("Reading, length {0}, {1} chunks", fs.Length, numChunks);
 int i=0;
+int j=0;
 while (executing && (read = sr.ReadBlock(buffer)) > 0)
 {
     foreach (char c in buffer)
     {
         if (!executing) break;
-        if (c == '.') continue;
-        if (current.Length < 8)
+        j++;
+        current = current.Substring(1) + c;
+        if (current.StartsWith("19") || current.StartsWith("20")) 
         {
-            current += c;
+            List<int>? old;
+            if (!count.TryGetValue(current, out old))
+            {
+                old = new();
+                count[current] = old;
+            }
+            old.Add(j-7);
         }
-        else
-        {
-            current = current.Substring(1) + c;
-        }
-        if (count.ContainsKey(current))
-            count[current]++;
-        else
-            count[current] = 1;
     }
     Console.WriteLine("Finished chunk {0} of {1} ({2}%)", i, numChunks, i*100/numChunks);
     i++;
 }
 
 Console.WriteLine("Processing data, found {0} entries", count.Count);
-Dictionary<string, int> good = new();
+Dictionary<string, List<int>> good = new();
 foreach (var x in count)
 {
     if (!x.Key.StartsWith("19") && !x.Key.StartsWith("20")) continue;
